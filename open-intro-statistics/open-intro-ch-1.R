@@ -39,25 +39,25 @@ data(county)
 
 ?head
 
-### Graphs: scatterplot, histograms and boxplots
+### Graphs: scatterplots, histograms and boxplots
 
 ## Scatterplot
 
 # Later at page 7 they present a scatterplot showing fed_spend against poverty.
 # Let's code it here too using both the "graphics" and the "ggplot2" packages in R.
 # If you don't have ggplot2, install it using the command you learned 
-# above: install.packages(ggplot2)
-# First with use the graphics package (you don't have to load it, it's in R already).
+# above: install.packages("ggplot2")
+# First with use the graphics package (you don't have to load it, it's already in R).
 # The variables are written as dataset$variable, "main" is the title, and 
 # xlab and ylab are the titles for the x and y axes, respectively. You can also
-# omit the x = and y =, I just let it here for you to know what goes where.
+# omit the x = and y =, I just let them here for you to know what goes where.
 
 plot(x = county$poverty, y = county$fed_spend, type = "p", #for "points"
      main = "Scatterplot of Fed spending per capita and Poverty",
      xlab = "poverty",
      ylab = "fed_spend")
 
-# With ggplot2, using the qplot ("quick plot") function. If you add two variables,
+# Now we use the qplot ("quick plot") function in ggplot2. If you add two variables,
 # ggplot2 assumes you want a scatterplot.
 
 library(ggplot2)
@@ -68,10 +68,10 @@ qplot(poverty, fed_spend, data = county) +
         ylab("fed_spend")
 
 # You can also add a line of best fit to the model. Let's now replicate the
-# scatterplot on page 20 and adding a line to the points. We add the option 
+# scatterplot on page 20 and add a line to it. We pass the option 
 # geom_smooth(method = "lm") to ggplot2, where lm stands for linear model.
 # If you want a LOESS regression line, just change the option inside the 
-# parentheses. Let's check both cases:
+# parentheses to method = "loess". Let's check both cases:
 
 qplot(num_char, line_breaks, data = email50) +
         xlab("Number of Characters (in thousands)") +
@@ -83,8 +83,8 @@ qplot(num_char, line_breaks, data = email50) +
         ylab("Number of Lines") + 
         geom_smooth(method = "loess")
 
-# You can also apply data transformations as described on pages 30-33. Taking the
-# log of num_chart and the square root of line_breaks, for instance:
+# You can also apply some data transformations as described on pages 30-33. For instance,
+# if you want to plot the log of num_chart and the square root of line_breaks, type:
 
 qplot(log(num_char), sqrt(line_breaks), data = email50) +
         xlab("Number of Characters (log)") +
@@ -100,23 +100,22 @@ hist(email50$num_char, main = "", xlab = "Number of Characters (in thousands)",
 
 # Where col = is the colour of the histogram, and breaks are the line breaks.
 # I used another command, seq(), which stands for sequence. In this case, the 
-# sequence goes from 0 to 70 by intervals of 10. You could type any number with
-# c(), which stands for concatenate. You should use c() any time you want to 
-# include more than a single number into an object or command.
+# sequence goes from 0 to 70 by intervals of 10. You may include any series of 
+# numbers within c(), which stands for concatenate. 
 
 hist(email50$num_char, main = "", xlab = "Number of Characters (in thousands)",
      col = "lightblue", breaks = c(0,20,40,60,80,100,120))
 
-# It is also very easy to do a histogram with ggplot2. If you just write one
-# variable on the command it will guess you want a histogram. 
+# It is also very easy to plot a histogram with ggplot2. If you write just one
+# variable in the command line it will guess you want to plot a histogram. 
 
 qplot(num_char, data = email50)
 
-# You can also add some options and change the number of bins in the graph.
-# You may also change the theme that ggplot2 uses. You can choose amongst
+# You can add some options and change the number of bins in the graph, as shown below.
+# Also, you may change the theme that ggplot2 uses. You can choose amongst
 # theme_bw(), theme_minimal(), theme_classic(), theme_gray(), and theme_light()
 
-qplot(num_char, data = email50, binwidth=0.5) + 
+qplot(num_char, data = email50, binwidth = 0.5) + 
         xlab("Number of Characters (in thousands)") +
         ylab("Count") +
         ggtitle("Histogram") +
@@ -128,7 +127,8 @@ qplot(num_char, data = email50, binwidth=0.5) +
 boxplot(email50$num_char, main = "Boxplot",
         xlab = "Number of Characters (in thousands)")
 
-# With ggplot2, using number (as a factor with three levels) and line_breaks
+# With ggplot2, using the variables "number" (as a factor with three levels) and "line_breaks"
+# from the email50 data set.
 
 qplot(as.factor(number), line_breaks, data = email50, geom = "boxplot") + 
         ggtitle("Boxplot") +
@@ -163,7 +163,7 @@ cor.test(county$poverty, county$fed_spend)
 
 ### Categorical data
 
-# The easiest way to create a contingency table is to use table() and tabulate 
+# The easiest way to create a contingency table is to use table() and tabulate() 
 
 tabulate(email50$number)
 table(email50$spam, email50$number)
@@ -172,8 +172,8 @@ table(email50$spam, email50$number)
 
 chisq.test(email50$spam, email50$number)
 
-# A nice way of visualising categorical data is through mosaicplot(). We use it with
-# the table command. We can also recode the levels so the graph is more intuitive.
+# A nice way of visualising categorical data is through mosaicplot(). We use it combined
+# with the table command. 
 
 mosaicplot(table(email50$spam, email50$number), 
            main = "Mosaic Plot", 
