@@ -19,7 +19,7 @@ install.packages("openintro")
 
 library(openintro)
 
-### Loading a data set
+# Loading a data set
 
 # At page 3 the authors talk about the "email50" data set
 # Let's take a look at it. We use the data() command to read data sets that are
@@ -39,6 +39,7 @@ data(county)
 
 ?head
 
+
 ### Graphs: scatterplots, histograms and boxplots
 
 ## Scatterplot
@@ -52,7 +53,7 @@ data(county)
 # xlab and ylab are the titles for the x and y axes, respectively. You can also
 # omit the x = and y =, I just let them here for you to know what goes where.
 
-plot(x = county$poverty, y = county$fed_spend, type = "p", #for "points"
+plot(x = county$poverty, y = county$fed_spend, type = "p", # for "points"
      main = "Scatterplot of Fed spending per capita and Poverty",
      xlab = "poverty",
      ylab = "fed_spend")
@@ -137,6 +138,37 @@ qplot(as.factor(number), line_breaks, data = email50, geom = "boxplot") +
         xlab("Number of Characters (in thousands)") +
         ylab("Number of Lines") + 
         theme_grey()
+        
+## Bar plot
+
+# Bar plots appear on page 36 of the book. R's command is a bit confusing, but you
+# can create a bar plot after tabulating the variable (we'll talk more about the 
+# table() command below.) 
+
+barplot(table(email50$number),
+        main = "Bar plot", 
+        ylab = "Count")
+
+# With ggplot2:
+
+qplot(number, data = email, geom = "bar", fill = I("navyblue")) +
+        ggtitle("Bar plot") + theme_bw() 
+
+# If you want to break down the counts by spam. The "fill" command includes the
+# variable you want to use, and position="fill" standardises the counts
+
+colour.palette <- c("darkgoldenrod1", "deepskyblue2")
+
+qplot(number, data = email, geom = "bar", fill = factor(spam), position = "fill") +
+        ggtitle("Bar plot") + theme_bw() +
+        scale_fill_manual(values = colour.palette) 
+
+# You can also create two graphs with facet_wrap()
+
+qplot(number, data = email, geom = "bar") +
+        ggtitle("Bar plot") + theme_bw() +
+        facet_wrap(~ spam)
+        
 
 ## Bar plot
 
@@ -180,6 +212,7 @@ qplot(number, data = email, geom = "bar") +
 samp1 <- sample(county$state, 15, replace = FALSE)
 samp1
 
+
 ### Correlations
 
 # They also talk about association at page 12. The first measure we use to assess
@@ -193,6 +226,7 @@ cor.test(county$poverty, county$fed_spend)
 
 # The test shows that the true correlation is not zero (the coefficient is
 # statistically significant), but the value is actually very close to zero (~0.06).
+
 
 ### Categorical data
 
@@ -212,3 +246,5 @@ mosaicplot(table(email50$spam, email50$number),
            main = "Mosaic Plot", 
            xlab = "Spam", ylab = "Number", 
            col = c(2,3,4))
+
+## end of script
