@@ -121,6 +121,8 @@ qplot(num_char, data = email50, binwidth = 0.5) +
         ggtitle("Histogram") +
         theme_bw()
 
+## Box plot
+
 # At page 28 the authors discuss the uses of the boxplot. 
 # Let's plot a few boxplots here too!
 
@@ -135,6 +137,37 @@ qplot(as.factor(number), line_breaks, data = email50, geom = "boxplot") +
         xlab("Number of Characters (in thousands)") +
         ylab("Number of Lines") + 
         theme_grey()
+
+## Bar plot
+
+# Bar plots appear on page 36 of the book. R's command is a bit confusing, but you
+# can create a bar plot after tabulating the variable (we'll talk more about the 
+# table() command below.) 
+
+barplot(table(email50$number),
+        main = "Bar plot", 
+        ylab = "Count")
+
+# With ggplot2:
+
+qplot(number, data = email, geom = "bar", fill = I("navyblue")) +
+        ggtitle("Bar plot") + theme_bw() 
+
+# If you want to break down the counts by spam. The "fill" command includes the
+# variable you want to use, and position="fill" standardises the counts
+
+colour.palette <- c("darkgoldenrod1", "deepskyblue2")
+
+qplot(number, data = email, geom = "bar", fill = factor(spam), position = "fill") +
+        ggtitle("Bar plot") + theme_bw() +
+        scale_fill_manual(values = colour.palette) 
+
+# You can also create two graphs with facet_wrap()
+
+qplot(number, data = email, geom = "bar") +
+        ggtitle("Bar plot") + theme_bw() +
+        facet_wrap(~ spam)
+        
 
 ### Sampling
 
