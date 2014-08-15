@@ -6,40 +6,22 @@
 ?sample
 
 outcomes <- c("Danilo", "Mira", "Nobody")
-sample100 <- sample(outcomes, 100, replace = TRUE, prob = c(.2,.5,.3))
-head(sample100)
+sample100 <- sample(outcomes,            # data set
+                    100,                 # sample size
+                    replace = TRUE,      # sampling with replacement
+                    prob = c(.2,.5,.3))  # probabilities for each observation
 table(sample100)
 
 # Using sample and a loop:
 
-outcomes1 <- 0:10
-sample200 <- rep(NA, 200)
+outcomes1 <- 0:10         # vector from 0 to 10
+sample500 <- rep(NA, 500) # creating an empty vector
 
-for(i in seq(along=sample200)){
-  # Samples of size 100
-  samp <- sample(outcomes1, 100, replace = TRUE)
-  # Takes the mean of such samples
-  sample200[i] <- mean(samp) 
+for(i in seq(along=sample500)){
+        samp <- sample(outcomes1, 200, replace = TRUE) # Samples of size 200
+        sample500[i] <- mean(samp)                     # Takes the mean of such samples
 }
 
-summary(sample200)
-hist(sample200)
-
-# Loop for squaring values, comparing with ifelse:
-
-values <- rnorm(1000, 10, 5)
-squared <- rep(NA, 1000)
-squared1 <- rep(NA, 1000)
-
-for(i in seq(along=squared1)){
-  if (values[i] <= 5) {
-    squared1[i] <- -1
-  }  else {
-    squared1[i] <- values[i]^2
-  }
-}
-squared <- ifelse(values <= 5, -1, values^2)
-
-hist(squared)
-df <- data.frame(values, squared, squared1)
-View(df)
+summary(sample500)
+plot(density(sample500))           # density plot of the sample means
+quantile(sample500, c(.025, .975)) # 95% interval of the distributions of the means
