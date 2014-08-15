@@ -45,6 +45,6 @@ lines(sequence, dnorm(sequence,                                             # dr
 
 legend(1.6, 2.5,                # places a legend at the appropriate place
        c("Data","Normal Dist"), # puts text in the legend        
-       lty=c(3,1),              # gives the legend appropriate symbols (lines)
+       lty=c(3,1),              # gives the legend appropriate symbols (in this case, lines)
        lwd=c(1,1)               # line width
        )
