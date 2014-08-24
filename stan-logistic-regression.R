@@ -34,7 +34,7 @@ str(turnout)
 
 # Now we fit a logistic model for several predictors. 
 # The model I want to estimate is:
-# vote = educate + income + race + age + age^2 + error, where vote is a binary variable.
+# vote = educate + income + age + age^2 + error, where vote is a binary variable.
 # Below I assume the same diffuse prior for all independent variables, a normal 
 # distribution with mean 0 and standard deviation 100.
 # Don't forget the ' at the beginning and end of the function
@@ -71,7 +71,7 @@ str(data.list)
 
 # Estimate the model
 fit <- stan(model_code = m1, data = data.list, iter = 1000, chains = 4)
-print(fit, digits = 3)
+print(fit, digits = 4)
 
 # Compare with the frequentist estimation
 summary(glm(vote ~ educate + income + age + I(age^2), binomial("logit"), turnout))
@@ -104,12 +104,11 @@ fit.ggmcmc <- ggs(fit, par_labels = P)
 # Some plots
 ggs_traceplot(fit.ggmcmc) + ggtitle("Trace Plots") + theme_bw()
 ggs_density(fit.ggmcmc) + ggtitle("Logistic Estimations for Voter Turnout") + 
-        theme_bw() + xlab("Estimate") + ylab("Density")
+        xlab("Estimate") + ylab("Density") + theme_bw()
 ggs_caterpillar(fit.ggmcmc) + ggtitle("Coefficient Plot") +
-        theme_bw() + xlab("HPD") + ylab("Parameter")
+        xlab("HPD") + ylab("Parameter") + theme_bw()
 
-# Stan's manual is very comprehensive and has codes for lots of models: 
-# http://mc-stan.org/manual.html
-# You may also check Stan's Github repository, it also has many examples:
+
+# You may also check Stan's Github repository, it has many examples:
 # https://github.com/stan-dev/example-models
 # Several other ggmcmc() options here: http://xavier-fim.net/packages/ggmcmc/
