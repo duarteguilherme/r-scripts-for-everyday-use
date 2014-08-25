@@ -55,11 +55,11 @@ parameters {
 vector[5] beta;                # one beta for the intercept, plus 4 for the independent variables
 }
 model {
-beta[1] ~ cauchy(0,2.5);       # you can set priors for all betas
-beta[2] ~ normal(0,100);       # if you prefer not to, uniform priors will be used
-beta[3] ~ normal(0,100);
-beta[4] ~ normal(0,100);
-beta[5] ~ normal(0,100);
+beta[1] ~ normal(0,100);       # you can set priors for all betas
+beta[2] ~ cauchy(0,2.5);       # if you prefer not to, uniform priors will be used
+beta[3] ~ cauchy(0,2.5);
+beta[4] ~ cauchy(0,2.5);
+beta[5] ~ cauchy(0,2.5);
 vote ~ bernoulli_logit(beta[1] + beta[2] * educate + beta[3] * income + beta[4] * age + beta[5] * age_sq); #formula
 }
 '
