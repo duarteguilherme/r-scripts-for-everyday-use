@@ -1,7 +1,7 @@
 # How to simulate quantities of interest in Zelig, arm and using predict()
 
 # Create a data set
-seed(12345)
+set.seed(12345)
 x <- rnorm(100,20,10)
 z <- rnorm(100,10,5)
 e <- rnorm(100,0,1)
@@ -27,7 +27,7 @@ summary(m1.arm)
 # Now we simulate data "by hand". First, we create a vector with the same
 # dimensions as the data set. Let us call it `s2`. 
 
-s2 <- data.frame(intercept = 1, x = 40, z = 10)
+s2 <- data.frame(intercept = 1, x = 50, z = 10)
 
 # Now running the simulations with the arm package:
 sims <- arm::sim(m1.arm, n = 1000)
@@ -74,12 +74,14 @@ mean(y_sim)
 # With predict()
 pred2 <- predict(m2.arm, s4, type="response", se.fit=TRUE)
 pred2$fit
+pred2$fit - (pred2$se.fit * 1.96)
+pred2$fit + (pred2$se.fit * 1.96)
 
 # Different values for population (log)
-s5 <- data.frame(intercept = 1, warl = 0, gdpenl = 0, lpopl1 = 0:25, lmtnest = 2.17)
+s5 <- data.frame(intercept = 1, warl = 0, gdpenl = 0, lpopl1 = 0:20, lmtnest = 2.17)
 pred3 <- predict(m2.arm, s5, type="response", se.fit=TRUE)
-plot(0:25, pred3$fit, type="l", xlab="log(population)", ylab="Pr(Civil War Onset=1)",
+plot(0:20, pred3$fit, type="l", xlab="log(population)", ylab="Pr(Civil War Onset=1)",
      ylim=c(0, 1))
-lines(0:25, pred3$fit - pred3$se.fit * 1.96, col="grey80")
-lines(0:25, pred3$fit + pred3$se.fit * 1.96, col="grey80")
+lines(0:20, pred3$fit - pred3$se.fit * 1.96, col="grey80")
+lines(0:20, pred3$fit + pred3$se.fit * 1.96, col="grey80")
 
