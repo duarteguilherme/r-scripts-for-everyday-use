@@ -80,8 +80,8 @@ pred2$fit + (pred2$se.fit * 1.96)
 # Different values for population (log)
 s5 <- data.frame(intercept = 1, warl = 0, gdpenl = 0, lpopl1 = 0:20, lmtnest = 2.17)
 pred3 <- predict(m2.arm, s5, type="response", se.fit=TRUE)
-plot(0:20, pred3$fit, type="l", xlab="log(population)", ylab="Pr(Civil War Onset=1)",
-     ylim=c(0, 1))
-lines(0:20, pred3$fit - pred3$se.fit * 1.96, col="grey80")
-lines(0:20, pred3$fit + pred3$se.fit * 1.96, col="grey80")
+plot(pred3$fit, type="l", xlab="Log(Population)", ylab="Pr(Civil War Onset=1)",
+     ylim=c(0, 1), xlim=c(0,20), frame.plot=FALSE)
+lines(pred3$fit - pred3$se.fit * 1.96, col="grey80")
+lines(pred3$fit + pred3$se.fit * 1.96, col="grey80")
 
