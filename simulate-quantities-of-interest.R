@@ -27,7 +27,7 @@ summary(m1.arm)
 # Now we simulate data "by hand". First, we create a vector with the same
 # dimensions as the data set. Let us call it `s2`. 
 
-s2 <- data.frame(intercept = 1, x = 50, z = 10)
+s2 <- data.frame(intercept = 1, x = 40, z = 10)
 
 # Now running the simulations with the arm package:
 sims <- arm::sim(m1.arm, n = 1000)
