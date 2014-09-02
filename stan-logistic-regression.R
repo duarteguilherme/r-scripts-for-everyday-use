@@ -4,23 +4,22 @@
 
 
 # Stan is a modeling language for full Bayesian inference. It uses Hamiltonian 
-# Monte Carlo to overcome some problems inherent in Gibbs sampling and is very
-# flexible. You can fit any kind of model using its framework. 
-# The manual has several examples, from OLS to complex hierarchical models.
-# It can be seen here: http://mc-stan.org/manual.html
+# Monte Carlo to overcome some issues of Gibbs sampling and is very
+# flexible. You can fit any kind of model using its basic framework. 
+# The manual has several examples: http://mc-stan.org/manual.html
 
 # Here I present a simple logistic model, borrowing from Pablo Barberá's code
-# (https://github.com/danilofreire/quant3materials/blob/master/bayesian/lab13_bayesian_probit.R)
+# (https://github.com/pablobarbera/quant3materials/blob/master/bayesian/lab13_bayesian_probit.R)
 # Since I intended this script to be used by true newbies (like me), it probably has
-# more comments than necessary, but I think it's better this way.
+# more comments than necessary, but it's probably better this way.
 
 # Let's get started!
 
-# How to run a simple logistic model in Stan?
+# How can we run a simple logistic model in Stan?
 
 # If you don't have Stan for R in your computer, uncomment and run the following lines:
-#source('http://mc-stan.org/rstan/install.R', echo = TRUE, max.deparse.length = 2000)
-#install_rstan()
+# source('http://mc-stan.org/rstan/install.R', echo = TRUE, max.deparse.length = 2000)
+# install_rstan()
 
 # Load necessary packages
 library(rstan)  # Stan interface for R
