@@ -1,6 +1,6 @@
-################################
-### Linear Models with RStan ###
-################################
+#########################################
+### (Robust) Linear Models with RStan ###
+#########################################
 
 # If you don't have Stan for R in your computer, uncomment and run the following lines:
 # source('http://mc-stan.org/rstan/install.R', echo = TRUE, max.deparse.length = 2000)
@@ -19,26 +19,30 @@ str(macro)
 model1 <- '
 data {
 int<lower=0> N;              # number of observations
-vector[N] gdp;               # setting the dependent variable
-vector[N] unem;              # independent variable 1
-vector[N] capmob;            # independent variable 2
-vector[N] trade;             # independent variable 3
+vector[N] gdp;               # dependent variable - gdp in US$1000
+vector[N] unem;              # independent variable - unemployment
+vector[N] capmob;            # independent variable - capital mobility
+vector[N] trade;             # independent variable - trade (gdp %)
 }
 parameters {
 real alpha;                  # intercept
-real coef_unem;              # coefficient for unem
-real coef_capmob;            # coefficient for unem
-real coef_trade;             # coefficient for unem
+real coef_unem;              # coefficient for unemployment
+real coef_capmob;            # coefficient for capital mobility
+real coef_trade;             # coefficient for trade
 real<lower=0> sigma;         # residual standard error
 }
 model {
-alpha ~ normal(0,100);       # diffuse prior for the intercept
+alpha ~ normal(0,100);       # weakly informative prior for the intercept
 coef_unem ~ normal(-2,1);    # informative prior 
-coef_capmob ~ normal(0,100); # diffuse prior
+coef_capmob ~ normal(0,100); # weakly informative prior
 coef_trade ~ normal(.2, .1); # informative prior
-gdp ~ normal(alpha + coef_unem * unem + coef_capmob * capmob + coef_trade * trade, sigma);
+
+gdp ~ normal(alpha + coef_unem * unem + coef_capmob * capmob + coef_trade * trade, sigma); # model
 }
 '
+# If you want to estimate a robust regression, say, a t-distribution with 4 degrees of freedom,
+# just change the sampling distribution to:
+# gdp ~ student_t(4, alpha + coef_unem * unem + coef_capmob * capmob + coef_trade * trade, sigma);
 
 # Prepare the data list
 data.list <- list(N = nrow(macro), gdp = macro$gdp, unem = macro$unem,
@@ -55,8 +59,8 @@ summary(lm(gdp ~ unem + capmob + trade, macro))
 # Extract Stan object
 f1 <- extract(fit)
 str(f1)
-plot(density(f1$coef_capmob), main = "Posterior -- Capital Mobility")  
-quantile(f1$coef_capmob, c(.025, .975))
+plot(density(f1$coef_capmob), main = "Posterior -- Capital Mobility")  # draw posterior
+quantile(f1$coef_capmob, c(.025, .975))                                # 95% interval
 
 # Load coda and ggmcmc to plot graphs
 library(coda)
@@ -80,13 +84,13 @@ fit.mcmc
 
 # And follow the menu instructions. A Stan fit object can also be transformed into
 # a ggmcmc object with ggs(). We can also change the parameters' labels.
-P <- data.frame(Parameter = c("alpha", "coef_unem", "coef_capmob", "coef_trade", "lp__"),
-                Label = c("Intercept", "Unemployment", "Capital Mobility", "Trade", "Log Probability"))
+P <- data.frame(Parameter = c("alpha", "coef_unem", "coef_capmob", "coef_trade", "sigma"),
+                Label = c("Intercept", "Unemployment", "Capital Mobility", "Trade", "Residual Standard Error"))
 fit.ggmcmc <- ggs(fit, par_labels = P)
 
 # Some plots
 ggs_traceplot(fit.ggmcmc) + ggtitle("Trace Plots") + theme_bw()
-ggs_density(fit.ggmcmc) + ggtitle("Logistic Estimations for Voter Turnout") + 
-        xlab("Estimate") + ylab("Density") + theme_minimal()
+ggs_density(fit.ggmcmc) + ggtitle("GDP per capita (US$ 1000)") + 
+        xlab("Estimate") + ylab("Density") + theme_bw()
 ggs_caterpillar(fit.ggmcmc) + ggtitle("Coefficient Plot") +
-        xlab("HPD") + ylab("Parameter") + theme_minimal()
+        xlab("HPD") + ylab("Parameter") + theme_bw()
