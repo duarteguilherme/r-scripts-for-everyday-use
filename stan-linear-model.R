@@ -16,7 +16,7 @@ str(macro)
 
 # Model
 
-m1 <- '
+model1 <- '
 data {
 int<lower=0> N;              # number of observations
 vector[N] gdp;               # setting the dependent variable
