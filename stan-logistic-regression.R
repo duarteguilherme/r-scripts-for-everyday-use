@@ -23,19 +23,20 @@
 
 # Load necessary packages
 library(rstan)  # Stan interface for R
-library(Zelig)  # data set
-library(coda)   # mcmc diagnostics 
-library(ggmcmc) # mcmc graphs
 
 # Data set
+library(Zelig)
 data(turnout)
 str(turnout)
 
 # Now we fit a logistic model for several predictors. 
 # The model I want to estimate is:
-# vote = educate + income + age + age^2 + error, where vote is a binary variable.
-# Below I assume the same diffuse prior for all independent variables, a normal 
-# distribution with mean 0 and standard deviation 100.
+# vote = educate + income + age + age^2 + error, in which vote is a binary variable.
+# Age squared is not in the original data set, so it will be created by Stan.
+# I assume the same weakly informative prior for the intercept, and a Cauchy
+# distribution for the other coefficients.
+# I also want to simulate the probability of voting for an individual with the following characteristics:
+# educate = 10, income = 15, age = 40 and age^2 = 1600. This is done with the 'generated quantities' block.
 # Don't forget the ' at the beginning and end of the function
 
 m1 <- '
@@ -59,7 +60,11 @@ beta[2] ~ cauchy(0,2.5);       # if you prefer not to, uniform priors will be us
 beta[3] ~ cauchy(0,2.5);
 beta[4] ~ cauchy(0,2.5);
 beta[5] ~ cauchy(0,2.5);
-vote ~ bernoulli_logit(beta[1] + beta[2] * educate + beta[3] * income + beta[4] * age + beta[5] * age_sq); #formula
+vote ~ bernoulli_logit(beta[1] + beta[2] * educate + beta[3] * income + beta[4] * age + beta[5] * age_sq); # model
+}
+generated quantities {         # simulate quantities of interest
+real y_hat;                    # create a new variable for the predicted values
+y_hat <- inv_logit(beta[1] + beta[2] * 10 + beta[3] * 15 + beta[4] * 40 + beta[5] * 1600); # model
 }
 '
 
@@ -70,18 +75,21 @@ str(data.list)
 
 # Estimate the model
 fit <- stan(model_code = m1, data = data.list, iter = 1000, chains = 4)
-print(fit, digits = 4)
+print(fit, digits = 3)
 
-# Compare with the frequentist estimation
-summary(glm(vote ~ educate + income + age + I(age^2), binomial("logit"), turnout))
+# Compare with frequentist estimation
+z1 <- zelig(vote ~ educate + income + age + I(age^2), model = "logit", data = turnout)
+summary(z1)
+s1 <- setx(z1, educate = 10, income = 15, age = 40)
+print(sim(z1, x = s1))
 
 # Using coda and ggmcmc to plot graphs
 library(coda)
+library(ggmcmc)
 
 # Plotting some graphs and assessing convergence with the coda package.
 # We can convert a fit object to coda with the following function
 # (http://jeromyanglim.tumblr.com/post/91434443911/how-to-convert-a-stan-fit-object-to-work-with-coda-and)
-
 stan2coda <- function(fit) {
         mcmc.list(lapply(1:ncol(fit), function(x) mcmc(as.array(fit)[,x,])))
 }
@@ -94,11 +102,15 @@ codamenu()
 2 # Use an mcmc object
 fit.mcmc
 
-# And follow the menu instructions. A Stan fit object can also be transformed into
-# a ggmcmc object with ggs(). We can also change the parameters' labels.
-P <- data.frame(Parameter = c("beta[1]", "beta[2]", "beta[3]", "beta[4]", "beta[5]", "lp__"),
-                Label = c("Intercept", "Educate", "Income", "Age", "Age Squared", "Log Probability"))
-fit.ggmcmc <- ggs(fit, par_labels = P)
+# And follow the menu instructions. A Stan fit object can also be transformed into a ggmcmc
+# object with ggs(). We can also change the parameters' labels.
+# First, we'll remove the y_hat and lp__ columns
+fit.mcmc <- fit.mcmc[,1:5]
+
+# Now add labels
+P <- data.frame(Parameter = c("beta[1]", "beta[2]", "beta[3]", "beta[4]", "beta[5]"),
+                Label = c("Intercept", "Educate", "Income", "Age", "Age Squared"))
+fit.ggmcmc <- ggs(fit.mcmc, par_labels = P)
 
 # Some plots
 ggs_traceplot(fit.ggmcmc) + ggtitle("Trace Plots") + theme_bw()
