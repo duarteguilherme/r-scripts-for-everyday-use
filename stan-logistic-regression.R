@@ -8,10 +8,8 @@
 # flexible. You can fit any kind of model using its basic framework. 
 # The manual has several examples: http://mc-stan.org/manual.html
 
-# Here I present a simple logistic model, borrowing from Pablo Barberá's code
-# (https://github.com/pablobarbera/quant3materials/blob/master/bayesian/lab13_bayesian_probit.R)
-# Since I intended this script to be used by true newbies (like me), it probably has
-# more comments than necessary, but it's probably better this way.
+# Here I present a simple logistic model. Since I intended this script to be used by beginners,
+# it probably has more comments than necessary, but I guess it's more instructive like this.
 
 # Let's get started!
 
@@ -23,9 +21,9 @@
 
 # Load necessary packages
 library(rstan)  # Stan interface for R
+library(Zelig)  # Simulations for frequentist inference, data
 
 # Data set
-library(Zelig)
 data(turnout)
 str(turnout)
 
@@ -77,7 +75,7 @@ str(data.list)
 fit <- stan(model_code = m1, data = data.list, iter = 1000, chains = 4)
 print(fit, digits = 3)
 
-# Compare with frequentist estimation
+# Compare with frequentist estimation (with Zelig)
 z1 <- zelig(vote ~ educate + income + age + I(age^2), model = "logit", data = turnout)
 summary(z1)
 s1 <- setx(z1, educate = 10, income = 15, age = 40)
