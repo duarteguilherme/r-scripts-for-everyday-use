@@ -4,8 +4,7 @@
 
 
 # Stan is a modeling language for full Bayesian inference. It uses Hamiltonian 
-# Monte Carlo to overcome some issues of Gibbs sampling and is very
-# flexible. You can fit any kind of model using its basic framework. 
+# Monte Carlo to overcome some issues of Gibbs sampling and is very flexible.
 # The manual has several examples: http://mc-stan.org/manual.html
 
 # Here I present a simple logistic model. Since I intended this script to be used by beginners,
@@ -13,7 +12,7 @@
 
 # Let's get started!
 
-# How can we run a simple logistic model in Stan?
+# How do we run a simple logistic model in Stan?
 
 # If you don't have Stan for R in your computer, uncomment and run the following lines:
 # source('http://mc-stan.org/rstan/install.R', echo = TRUE, max.deparse.length = 2000)
@@ -29,10 +28,9 @@ str(turnout)
 
 # Now we fit a logistic model with several predictors. 
 # The model I want to estimate is:
-# vote = educate + income + age + age^2 + error, in which vote is a binary variable.
-# Age squared is not in the original data set, so it will be created by Stan.
-# I assume the same weakly informative prior for the intercept, and a Cauchy
-# distribution for the other coefficients.
+# Pr(vote) = educate + income + age + age^2 + error, in which vote is a binary variable.
+# The age^2 variable is not in the original data set, so it will be created by Stan.
+# I assume the same weakly informative prior for the intercept and the coefficients.
 # I also want to simulate the probability of voting for an individual with the following characteristics:
 # educate = 10, income = 15, age = 40 and age^2 = 1600. This is done with the 'generated quantities' block.
 # Don't forget the ' at the beginning and end of the function
