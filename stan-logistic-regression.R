@@ -27,7 +27,7 @@ library(Zelig)  # Simulations for frequentist inference, data
 data(turnout)
 str(turnout)
 
-# Now we fit a logistic model for several predictors. 
+# Now we fit a logistic model with several predictors. 
 # The model I want to estimate is:
 # vote = educate + income + age + age^2 + error, in which vote is a binary variable.
 # Age squared is not in the original data set, so it will be created by Stan.
