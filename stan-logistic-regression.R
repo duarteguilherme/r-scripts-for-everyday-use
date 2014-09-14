@@ -50,19 +50,23 @@ vector[N] age_sq;              # create new variable (4), age squared (no dots i
 age_sq <- age .* age;          # formula for the variable, do not forget the . before multiplication
 }
 parameters {
-vector[5] beta;                # one beta for the intercept, plus 4 for the independent variables
+real alpha;                    # intercept
+real b_educate;                # beta for educate, etc
+real b_income; 
+real b_age;
+real b_age_sq; 
 }
 model {
-beta[1] ~ normal(0,100);       # you can set priors for all betas
-beta[2] ~ cauchy(0,2.5);       # if you prefer not to, uniform priors will be used
-beta[3] ~ cauchy(0,2.5);
-beta[4] ~ cauchy(0,2.5);
-beta[5] ~ cauchy(0,2.5);
-vote ~ bernoulli_logit(beta[1] + beta[2] * educate + beta[3] * income + beta[4] * age + beta[5] * age_sq); # model
+alpha ~ normal(0,100);         # you can set priors for all betas
+b_educate ~ normal(0,100);     # if you prefer not to, uniform priors will be used
+b_income ~ normal(0,100);
+b_age ~ normal(0,100);
+b_age_sq ~ normal(0,100);
+vote ~ bernoulli_logit(alpha + b_educate * educate + b_income * income + b_age * age + b_age_sq * age_sq); # model
 }
 generated quantities {         # simulate quantities of interest
 real y_hat;                    # create a new variable for the predicted values
-y_hat <- inv_logit(beta[1] + beta[2] * 10 + beta[3] * 15 + beta[4] * 40 + beta[5] * 1600); # model
+y_hat <- inv_logit(alpha + b_educate * 10 + b_income * 15 + b_age * 40 + b_age_sq * 1600); # model
 }
 '
 
@@ -117,7 +121,31 @@ ggs_density(fit.ggmcmc) + ggtitle("Logistic Estimations for Voter Turnout") +
 ggs_caterpillar(fit.ggmcmc) + ggtitle("Coefficient Plot") +
         xlab("HPD") + ylab("Parameter") + theme_bw()
 
-
 # You may also check Stan's Github repository, it has many examples:
 # https://github.com/stan-dev/example-models
 # Several other ggmcmc() options here: http://xavier-fim.net/packages/ggmcmc/
+
+# Lastly, if we want to estimate a full marginal distribution for a given
+# predictor in the model, we employ the workhorse apply() function as follows:
+# (from: http://bit.ly/1y0OMyC)
+margins <- apply(as.matrix(fit), MARGIN = 2, FUN = quantile, probs = (1:100) / 100)
+head(margins, 10)
+
+# Plot the marginal distribution of educate (2nd column)
+par(mfrow=c(2,2))
+plot(jitter(margins[,2]), pch=20, xlab = "Education Years - Marginal Distribution (%)", 
+     ylab = "Probability of Voting", main = "Predicted Values", axes=FALSE)
+axis(1) # adds x axis
+axis(2) # adds y axis
+plot(jitter(margins[,3]), pch=20, xlab = "Income in US$1000 - Marginal Distribution (%)", 
+     ylab = "Probability of Voting", main = "Predicted Values", axes=FALSE)
+axis(1) 
+axis(2) 
+plot(jitter(margins[,4]), pch=20, xlab = "Age - Marginal Distribution (%)", 
+     ylab = "Probability of Voting", main = "Predicted Values", axes=FALSE)
+axis(1) 
+axis(2) 
+plot(jitter(margins[,5]), pch=20, xlab = "Age Squared - Marginal Distribution (%)", 
+     ylab = "Probability of Voting", main = "Predicted Values", axes=FALSE)
+axis(1)
+axis(2) 
