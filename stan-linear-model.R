@@ -53,6 +53,23 @@ str(data.list)
 fit <- stan(model_code = model1, data = data.list, iter = 1000, chains = 4)
 print(fit, digits = 2)
 
+# One can also calculate the chains using parallelising packages and functions
+model1 <- stan(model_code = code1, data = data.list, chains = 0) # only to translate the model to C++
+
+# Parallel computing, running 4 chains in a 4-cores PC
+library(parallel) 
+posterior <- mclapply(1:4, mc.cores = 4, 
+                      function(i) stan(fit = model1, data = data.list, 
+                                       seed = 12345, 
+                                       chains = 1, chain_id = i, 
+                                       refresh = -1))
+
+model1 <- sflist2stanfit(posterior) # collect the results back into a single Stan fit object
+print(model1)
+
+# Compare with frequentist estimation
+summary(lm(gdp ~ unem + capmob + trade, macro))
+
 # Compare with frequentist estimation
 summary(lm(gdp ~ unem + capmob + trade, macro))
 
