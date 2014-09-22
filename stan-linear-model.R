@@ -16,7 +16,7 @@ str(macro)
 
 # Model
 
-model1 <- '
+code <- '
 data {
 int<lower=0> N;              # number of observations
 vector[N] gdp;               # dependent variable - gdp in US$1000
@@ -50,11 +50,11 @@ data.list <- list(N = nrow(macro), gdp = macro$gdp, unem = macro$unem,
 str(data.list)
 
 # Estimate the model
-fit <- stan(model_code = model1, data = data.list, iter = 1000, chains = 4)
-print(fit, digits = 2)
+model <- stan(model_code = code, data = data.list, iter = 1000, chains = 4)
+print(model, digits = 2)
 
 # One can also calculate the chains using parallelising packages and functions
-model1 <- stan(model_code = code1, data = data.list, chains = 0) # only to translate the model to C++
+model1 <- stan(model_code = code, data = data.list, chains = 0) # only to translate the model to C++
 
 # Parallel computing, running 4 chains in a 4-cores PC
 library(parallel) 
@@ -70,11 +70,8 @@ print(model1)
 # Compare with frequentist estimation
 summary(lm(gdp ~ unem + capmob + trade, macro))
 
-# Compare with frequentist estimation
-summary(lm(gdp ~ unem + capmob + trade, macro))
-
 # Extract Stan object
-f1 <- extract(fit)
+f1 <- extract(model1)
 str(f1)
 plot(density(f1$coef_capmob), main = "Posterior -- Capital Mobility")  # draw posterior
 quantile(f1$coef_capmob, c(.025, .975))                                # 95% interval
@@ -84,14 +81,14 @@ library(coda)
 library(ggmcmc)
 
 # Plotting some graphs and assessing convergence with the coda package.
-# We can convert a fit object to coda with the following function
+# We can convert a Stan fit object to coda with the following function
 # (http://jeromyanglim.tumblr.com/post/91434443911/how-to-convert-a-stan-fit-object-to-work-with-coda-and)
 
-stan2coda <- function(fit) {
-        mcmc.list(lapply(1:ncol(fit), function(x) mcmc(as.array(fit)[,x,])))
+stan2coda <- function(model1) {
+        mcmc.list(lapply(1:ncol(model1), function(x) mcmc(as.array(model1)[,x,])))
 }
 
-fit.mcmc <- stan2coda(fit)
+fit.mcmc <- stan2coda(model1)
 
 # I personally like the codamenu() function. It has all tests and plots one may
 # want. Just type:
