@@ -90,8 +90,8 @@ stan2coda <- function(model1) {
 
 fit.mcmc <- stan2coda(model1)
 
-# I personally like the codamenu() function. It has all tests and plots one may
-# want. Just type:
+# I personally like the codamenu() function. It has all tests and plots one may want.
+# Just type:
 codamenu()
 2 # Use an mcmc object
 fit.mcmc
