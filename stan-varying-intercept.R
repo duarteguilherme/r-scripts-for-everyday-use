@@ -60,8 +60,8 @@ data {
 }
 parameters {
   vector[14] alpha;                      # intercept estimated with 14 countries       
-  real<lower=0,upper=100> sigma_alpha;   # variance for the intercept
-  real<lower=0,upper=100> sigma_gdp;     # variance for gdp
+  real<lower=0,upper=100> sigma_alpha;   # standard error for the intercept
+  real<lower=0,upper=100> sigma_gdp;     # standard error for gdp
   real mu_alpha;                         # mean for intercepts
   real b1_trade;                         # betas 1, 2, and 3
   real b2_unem;
